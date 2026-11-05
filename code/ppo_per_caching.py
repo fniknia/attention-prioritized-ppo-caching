@@ -1,27 +1,6 @@
 """
 PPO with prioritized experience replay for SMDP-based edge caching.
 
-Rewritten from CL_PPO_PER.ipynb. Differences from the notebook:
-
-* Requests: file IDs are drawn from a Zipf distribution with alpha = 1 over
-  FILE_TYPES = 50 file types (p_k proportional to 1 / k).
-* Arrivals: a Poisson process with mean interarrival time 0.2. Interarrivals are
-  exponential, and arrival times are their cumulative sum.
-* Lifetime, importance and size are fixed per file type. They are read from
-  file_types.csv, which was extracted from the notebook's per-request vectors.
-  The notebook's large per-request arrays have been removed.
-* Stored priority: a new transition is inserted with the current maximum
-  priority, as in the notebook's Memory.store. The notebook does not contain
-  the attention-based priority from the paper.
-* Fixes: the notebook used InterArrivals[i] directly as the absolute time (the
-  values are interarrivals, not arrival times); StateCache indexed cache slots
-  instead of file types; the critic loss multiplied the importance weights by a
-  scalar sum instead of applying them per sample; and returns had shape (B, 1)
-  while values had shape (B,), which broadcast to (B, B). These are corrected here.
-* Removed: the h5py demo-copy path (no demonstrations are used, so the JEQ term is
-  always zero), the L2 term (no Keras regularizers are defined), and the
-  waiting-time bookkeeping, which did not affect the learned policy.
-
 Usage:
     python ppo_per_caching.py --steps 10000 --seed 0 --out results
 """
